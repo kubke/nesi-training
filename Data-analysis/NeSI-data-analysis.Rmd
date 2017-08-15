@@ -1,0 +1,35 @@
+---
+title: "NeSI-data-analysis"
+author: "Fabiana"
+date: "15 August 2017"
+output: word_document
+---
+
+test
+
+```{r setupenv, echo = FALSE, eval = FALSE}
+
+# Set up environment to read files:Need to 
+#* set working directory
+#* provide correct filename
+#* check data has been read as a data.frame
+
+setwd("/Volumes/myhome/GitHub/nesi-training/Data-analysis")
+resinstitution = read.csv("researchers-institution.csv") 
+resdiscipline = read.csv("researchers-discipline.csv")
+
+#check it is a dataframe
+class(resinstitution)
+class(resdiscipline)
+
+library(ggplot2) #calls ggplot2 which should be installed
+library(plyr) #need it for counts
+```
+
+
+
+```{r, echo=FALSE, eval = TRUE}
+
+```
+
+
