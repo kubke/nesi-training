@@ -13,50 +13,7 @@ Sources:
 Personnel involved in research and development (NZ wide):
 Research and Development survey 2016, file rd-2016-tables.xlx, Table 7, stats.nz 
 
-AgResearch 
-
-Staff FTE: AgResearch Annual Report 2015/16 Final-a p. 20
-
-Total FTE 382.59 (p20)
-
-Excluding casuals and fixed term employees (less than 6 months) (p.23)
-Research teams FTE 382.59
-Research support FTE 166.15
-Other FTE: 80.07
-Total FTE: 628.81
-
-Scientist FTE 230.24
-Scientist headcount 245
-Technician/Technologist FTE 174.4
-Technician/Technologist Headcount 200
-
-AgResearch Total FTE (Review of Crown Research Institute Core Funding, MBIE, May 2016)
-2010/11 780
-2014/15 767
-
-ESR Total FTE (Review of Crown Research Institute Core Funding, MBIE, May 2016)
-2010/11 325
-2014/15 351
-
-GNS Total FTE (Review of Crown Research Institute Core Funding, MBIE, May 2016)
-2010/11 370
-2014/15 369
-
-Landcare Total FTE (Review of Crown Research Institute Core Funding, MBIE, May 2016)
-2010/11 415
-2014/15 331
-
-NIWA Total FTE (Review of Crown Research Institute Core Funding, MBIE, May 2016)
-2010/11 643
-2014/15 594
-
-PFR Total FTE (Review of Crown Research Institute Core Funding, MBIE, May 2016)
-2010/11 810
-2014/15 805
-
-Scion Total FTE (Review of Crown Research Institute Core Funding, MBIE, May 2016)
-2010/11 313
-2014/15 283
+CRI data - some discrepancies with MBIE report - see cri staff data xlsx
 
 
 funded.eps: 
