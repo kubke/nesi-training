@@ -13,11 +13,14 @@ Sources:
 Personnel involved in research and development (NZ wide):
 Research and Development survey 2016, file rd-2016-tables.xlx, Table 7, stats.nz 
 
-CRI data - some discrepancies with MBIE report - see cri staff data xlsx
-
 
 funded.eps: 
 Number of funded evidence portfolios in PBRF 2012 round. 
 
 * Institution: PBRF 2012 Supplement Appendix A Part 1 Table A-1
 * Discipline: PBRF 2012 Supplement Appendix A Part 1 Table A-2
+
+res.staff.number: 
+for heduni and hedother:
+Calculate percentage of Eps -
+estimate number from total population:10700 (from file rd-2016-tables.xlx, Table 7 stats.nz)
