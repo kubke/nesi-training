@@ -30,37 +30,8 @@ library(plyr) #need it for counts
 
 ```{r total-researchers, echo=FALSE, eval = TRUE}
 
-#number of researchers
-res.number.business.2014 = 7800
-res.number.business.2016 = 9300
-res.number.gov.2014 = 2500
-res.number.gov.2016 = 2400
-res.number.hed.2014 = 10500
-res.number.hed.2016 = 10700
+#read from rd-2016.csv
 
-#number of student researchers
-stud.number.business.2014 = 0 #figure not available
-stud.number.business.2016 = 0 #figure not available
-stud.number.gov.2014 =0 #figure not available
-stud.number.gov.2016 = 0 #figure not available
-stud.number.hed.2014 = 16600
-stud.number.hed.2016 = 16400
-
-#number of technicians
-tech.number.business.2014 = 4300
-tech.number.business.2016 = 4400
-tech.number.gov.2014 =1100
-tech.number.gov.2016 = 1500
-tech.number.hed.2014 = 2100
-tech.number.hed.2016 = 2000
-
-#number of support staff
-supp.number.business.2014 = 1900
-supp.number.business.2016 = 1700
-supp.number.gov.2014 = 630
-supp.number.gov.2016 = 470
-supp.number.hed.2014 = 4000
-supp.number.hed.2016 = 4900
 
 
 
