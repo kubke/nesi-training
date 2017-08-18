@@ -14,13 +14,15 @@ test
 #* provide correct filename
 #* check data has been read as a data.frame
 
-setwd("/Volumes/myhome/GitHub/nesi-training/Data-analysis")
-resinstitution = read.csv("researchers-institution.csv") 
+setwd("~/Desktop/GitHub/nesi-training/Data-analysis")
+resinstitution = read.csv("researchers-institution.csv") #HED institutions
+rescri = rad.csv("researchers-cris.csv") #CRI data
 resdiscipline = read.csv("researchers-discipline.csv")
 
 #check it is a dataframe
 class(resinstitution)
 class(resdiscipline)
+class(rescri)
 
 library(ggplot2) #calls ggplot2 which should be installed
 library(plyr) #need it for counts
