@@ -12,6 +12,7 @@ Sources:
 
 Personnel involved in research and development (NZ wide):
 Research and Development survey 2016, file rd-2016-tables.xlx, Table 7, stats.nz 
+*Totals presented in the table are different from actual sum of numbers in the table. 
 
 
 funded.eps: 
@@ -22,5 +23,7 @@ Number of funded evidence portfolios in PBRF 2012 round.
 
 res.staff.number: 
 for heduni and hedother:
-Calculate percentage of Eps -
-estimate number from total population:10700 (from file rd-2016-tables.xlx, Table 7 stats.nz)
+Calculate percentage of Eps - (toal = 6311.41) -> includes all institutions
+
+estimate HED research number from total population:
+Tot number researcher 2016: 10700 (from file rd-2016-tables.xlx, Table 7 stats.nz)
