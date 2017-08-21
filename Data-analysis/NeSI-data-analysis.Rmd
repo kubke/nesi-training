@@ -29,6 +29,7 @@ class(rdsurvey2016)
 
 library(ggplot2) #calls ggplot2 which should be installed
 library(plyr) #need it for counts
+library(reshape2) #need it for plotting
 ```
 
 Estimate number or total researchers in each Higher Ed institution, by using the fraction of total funded EP portfolios in 2012 PBRF round, and estimating FTE number and headcount number from the total values provided by stats.nz 2016 R&d survey.
@@ -73,6 +74,42 @@ resdiscipline$res.staff.fte <- resdiscipline$percent.funded.ep * hed.researcher.
 
 
 ```
+
+Calculate the total number or NeSI learners by institutions. 
+
+```{r total researchers, echo=FALSE, eval = TRUE}
+
+#Replace NA with 0
+reshedall[is.na(reshedall)] <- 0
+rescri[is.na(rescri)]<-0
+#add different years of NeSi learners to new totals column
+reshedall$nesi.learner.total = reshedall$nesi.learner.2017 + reshedall$nesi.learner.2016 + reshedall$nesi.learner.2015 +reshedall$nesi.learner.2013
+rescri$nesi.learner.total = rescri$nesi.learner.2017+rescri$nesi.learner.2016+rescri$nesi.learner.2015+rescri$nesi.learner.2013
+
+ggplot(reshedall, aes(x=reorder(institution,nesi.learner.total), y=nesi.learner.total)) +
+  geom_bar(stat="identity") + 
+  coord_flip()
+
+ggplot(rescri, aes(x=reorder(institution,nesi.learner.total), y=nesi.learner.total)) +
+  geom_bar(stat="identity") + 
+  coord_flip()
+  
+criperyear <- melt(rescri[,c('institution','nesi.learner.2013','nesi.learner.2015','nesi.learner.2016','nesi.learner.2017')],id.vars = 1)
+
+ggplot(criperyear,aes(x = institution,y = value)) + 
+  geom_bar(aes(fill = variable),stat = "identity",position = "dodge")  +
+  ylab("number of learners") +
+  coord_flip()
+
+hedperyear <- melt(reshedall[,c('institution','nesi.learner.2013','nesi.learner.2015','nesi.learner.2016','nesi.learner.2017')],id.vars = 1)
+
+ggplot(hedperyear,aes(x = institution,y = value)) + 
+  geom_bar(aes(fill = variable),stat = "identity",position = "dodge")  +
+  ylab("number of learners") +
+  coord_flip()
+  
+```
+
 
 Proportion of staff within the University sector (excludes all other tertiary institutions)
 
