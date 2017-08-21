@@ -5,7 +5,7 @@ date: "15 August 2017"
 output: word_document
 ---
 
-test
+
 
 ```{r setupenv, echo = FALSE, eval = FALSE}
 
@@ -15,28 +15,88 @@ test
 #* check data has been read as a data.frame
 
 setwd("~/Desktop/GitHub/nesi-training/Data-analysis")
-resinstitution = read.csv("researchers-institution.csv") #HED institutions
-rescri = rad.csv("researchers-cris.csv") #CRI data
+reshed = read.csv("researchers-hed.csv") #HED institutions
+rescri = read.csv("researchers-cris.csv") #CRI data
 resdiscipline = read.csv("researchers-discipline.csv")
+rdsurvey2016 = read.csv("rd-2016.csv")
 
 #check it is a dataframe
-class(resinstitution)
-class(resdiscipline)
+class(reshed)
 class(rescri)
+class(resdiscipline)
+class(rdsurvey2016)
+
 
 library(ggplot2) #calls ggplot2 which should be installed
 library(plyr) #need it for counts
 ```
 
+Estimate number or total researchers in each Higher Ed institution, by using the fraction of total funded EP portfolios in 2012 PBRF round, and estimating FTE number and headcount number from the total values provided by stats.nz 2016 R&d survey.
 
 
-```{r total-researchers, echo=FALSE, eval = TRUE}
+```{r total researchers, echo=FALSE, eval = TRUE}
 
-#read from rd-2016.csv
+#read from rd-2016.csv total eft and number of researchers (exculde student researcher)
+hed.researcher.number <- as.numeric(rdsurvey2016$hed.number.2016[rdsurvey2016$role == "researcher"])
+hed.researcher.fte <-as.numeric(rdsurvey2016$hed.fte.2016[rdsurvey2016$role == "researcher"])
 
+total.eps <-sum(reshed$funded.ep) #total number of funded eps  (should be 6311.41)
 
+#split Universities from other tertiary institutions, then add other tertiary as a single line
+resheduni = subset(reshed, reshed$inst.category == "heduni")
+reshedother = subset(reshed, reshed$inst.category == "hedother")
+
+class(resheduni)
+class(reshedother)
+
+#** cannot get the 'totals' for other hed .....so I can bind with the rest of the Universities
+
+#df<-heduni
+#class(heduni)
+reshedall<-as.data.frame(resheduni)
+reshedall[nrow(resheduni) + 1,] = NA
+levels(reshedall$institution) <- c(levels(reshedall$institution),"allother")
+reshedall$institution[nrow(reshedall)]<-"allother"
+reshedall$inst.category[nrow(reshedall)]<-"hedother"
+reshedall$funded.ep[reshedall$institution=="allother"] <-sum(reshedother$funded.ep)
+
+#calculate total researchers number per institution from funded eviedence porfolio numbers
+
+reshedall$percent.funded.ep <- reshedall$funded.ep * 100 /total.eps
+reshedall$res.staff.number <- reshedall$percent.funded.ep * hed.researcher.number  /100
+reshedall$res.staff.fte <- reshedall$percent.funded.ep * hed.researcher.fte /100
+
+#caclulate total researchers FTEs per discipline from funded eviedence porfolio numbers
+resdiscipline$percent.funded.ep <- resdiscipline$funded.ep * 100 /total.eps
+resdiscipline$res.staff.number <- resdiscipline$percent.funded.ep * hed.researcher.number  /100
+resdiscipline$res.staff.fte <- resdiscipline$percent.funded.ep * hed.researcher.fte /100
 
 
 ```
 
+Proportion of staff within the University sector (excludes all other tertiary institutions)
+
+```{r donut plot, echo=FALSE, eval=TRUE}
+
+# Create data to plot
+dat <- data.frame(institution = resinstitution$institution, staffnumber = resinstitution$res.staff.number, insttype = resinstitution$inst.category)
+
+# Add addition columns, needed for drawing with geom_rect.
+dat$fraction = dat$staffnumber[dat$insttype=="heduni"] / sum(dat$staffnumber[dat$insttype=="heduni"])
+dat = dat[order(dat$fraction[dat$insttype=="heduni"]), ]
+dat$ymax = cumsum(dat$fraction[dat$insttype=="heduni"])
+dat$ymin = c(0, head(dat$ymax[dat$insttype=="heduni"], n=-1))
+ 
+# Make the plot
+p2 = ggplot(dat, aes(fill=institution, ymax=ymax, ymin=ymin, xmax=4, xmin=3)) +
+     geom_rect(colour="grey30") +
+     coord_polar(theta="y") +
+     xlim(c(0, 4)) +
+     theme_bw() +
+     theme(panel.grid=element_blank()) +
+     theme(axis.text=element_blank()) +
+     theme(axis.ticks=element_blank()) +
+     ggtitle("proportion of research staff at universities") 
+p2
+```
 
