@@ -2,12 +2,14 @@
 title: "NeSI-data-analysis"
 author: "Fabiana"
 date: "15 August 2017"
-output: word_document
+output:
+  word_document: default
+  html_document: default
 ---
 
 
 
-```{r setupenv, echo = FALSE, eval = FALSE}
+```{r setupenv, echo = FALSE, eval = TRUE}
 
 # Set up environment to read files:Need to 
 #* set working directory
@@ -21,21 +23,27 @@ resdiscipline = read.csv("researchers-discipline.csv")
 rdsurvey2016 = read.csv("rd-2016.csv")
 
 #check it is a dataframe
-class(reshed)
-class(rescri)
-class(resdiscipline)
-class(rdsurvey2016)
+#class(reshed)
+#class(rescri)
+#class(resdiscipline)
+#class(rdsurvey2016)
 
 
 library(ggplot2) #calls ggplot2 which should be installed
 library(plyr) #need it for counts
 library(reshape2) #need it for plotting
+
+knitr::opts_chunk$set(fig.width=12, fig.height=8) 
 ```
 
-Estimate number or total researchers in each Higher Ed institution, by using the fraction of total funded EP portfolios in 2012 PBRF round, and estimating FTE number and headcount number from the total values provided by stats.nz 2016 R&d survey.
+## Worforce number in NZ 
+
+Estimate number or total researchers in each Higher Ed institution, by using the fraction of total funded EP portfolios in 2012 PBRF round, and estimating FTE number and headcount number from the total values provided by stats.nz 2016 R&d survey. According to TEC there are 9 universities and a number of other HED institutions that contribute to the PBRF 2012. All these other HED institutions are grouped into one as "all other"
 
 
-```{r total researchers, echo=FALSE, eval = TRUE}
+```{r researchers, echo=FALSE, eval = TRUE}
+
+setwd("~/Desktop/GitHub/nesi-training/Data-analysis")
 
 #read from rd-2016.csv total eft and number of researchers (exculde student researcher)
 hed.researcher.number <- as.numeric(rdsurvey2016$hed.number.2016[rdsurvey2016$role == "researcher"])
@@ -47,13 +55,9 @@ total.eps <-sum(reshed$funded.ep) #total number of funded eps  (should be 6311.4
 resheduni = subset(reshed, reshed$inst.category == "heduni")
 reshedother = subset(reshed, reshed$inst.category == "hedother")
 
-class(resheduni)
-class(reshedother)
+#class(resheduni)
+#class(reshedother)
 
-#** cannot get the 'totals' for other hed .....so I can bind with the rest of the Universities
-
-#df<-heduni
-#class(heduni)
 reshedall<-as.data.frame(resheduni)
 reshedall[nrow(resheduni) + 1,] = NA
 levels(reshedall$institution) <- c(levels(reshedall$institution),"allother")
@@ -72,48 +76,105 @@ resdiscipline$percent.funded.ep <- resdiscipline$funded.ep * 100 /total.eps
 resdiscipline$res.staff.number <- resdiscipline$percent.funded.ep * hed.researcher.number  /100
 resdiscipline$res.staff.fte <- resdiscipline$percent.funded.ep * hed.researcher.fte /100
 
+cat("Total number of resarchers at universities: ", hed.researcher.number, "(from R&D 2016 survey)")
 
 ```
 
-Calculate the total number or NeSI learners by institutions. 
+## Total number or NeSI learners by institution 
 
-```{r total researchers, echo=FALSE, eval = TRUE}
+
+```{r learners, echo=FALSE, eval = TRUE}
 
 #Replace NA with 0
 reshedall[is.na(reshedall)] <- 0
 rescri[is.na(rescri)]<-0
+
 #add different years of NeSi learners to new totals column
 reshedall$nesi.learner.total = reshedall$nesi.learner.2017 + reshedall$nesi.learner.2016 + reshedall$nesi.learner.2015 +reshedall$nesi.learner.2013
 rescri$nesi.learner.total = rescri$nesi.learner.2017+rescri$nesi.learner.2016+rescri$nesi.learner.2015+rescri$nesi.learner.2013
 
+cat("Distribution of NeSi learners by HED institutions (all years) ")
+
 ggplot(reshedall, aes(x=reorder(institution,nesi.learner.total), y=nesi.learner.total)) +
   geom_bar(stat="identity") + 
+  #ggtitle("# NeSI Learners by institution (HED)")+
+  ylab("Total number of learners")+
+  xlab("")+
   coord_flip()
+
+
+cat("Distribution of NeSI learners by HED institutions (broken by years)")
+
+hedperyear <- melt(reshedall[,c('institution','nesi.learner.2013','nesi.learner.2015','nesi.learner.2016','nesi.learner.2017')],id.vars = 1)
+ggplot(hedperyear,aes(x = institution,y = value)) + 
+  geom_bar(aes(fill = variable),stat = "identity",position = "dodge")  +
+  ylab("number of learners") +
+  xlab("")+
+  coord_flip()
+
+cat("Distribution of NeSI learners by CRIs (all years)")
 
 ggplot(rescri, aes(x=reorder(institution,nesi.learner.total), y=nesi.learner.total)) +
   geom_bar(stat="identity") + 
+  ylab("Total number of learners")+
+  xlab("")+
   coord_flip()
   
+cat("Distribution of NeSI learners by CRI (broken by years)")
 criperyear <- melt(rescri[,c('institution','nesi.learner.2013','nesi.learner.2015','nesi.learner.2016','nesi.learner.2017')],id.vars = 1)
 
 ggplot(criperyear,aes(x = institution,y = value)) + 
   geom_bar(aes(fill = variable),stat = "identity",position = "dodge")  +
   ylab("number of learners") +
+  xlab("")+
   coord_flip()
 
-hedperyear <- melt(reshedall[,c('institution','nesi.learner.2013','nesi.learner.2015','nesi.learner.2016','nesi.learner.2017')],id.vars = 1)
 
-ggplot(hedperyear,aes(x = institution,y = value)) + 
-  geom_bar(aes(fill = variable),stat = "identity",position = "dodge")  +
-  ylab("number of learners") +
-  coord_flip()
-  
 ```
 
+# Proportion of the workforce in different disciplines that use NeSI
 
-Proportion of staff within the University sector (excludes all other tertiary institutions)
 
-```{r donut plot, echo=FALSE, eval=TRUE}
+```{r nesi proportion, echo=FALSE, eval=TRUE}
+#calculate percent of nesi users per total estimated workforce
+# number nesi users *100 / total workforce
+
+#NeSI users by discipline
+
+discipline.nesi.users = sum(resdiscipline$nesi.users) 
+discipline.res.number = sum(resdiscipline$res.staff.number) #should match hed.researcher.number
+
+#total research workforce (per rd 2016) - No info about discipline
+
+res.gov.2016 = rdsurvey2016$gov.number.2016[rdsurvey2016$role == "total"]
+res.hed.2016 = rdsurvey2016$hed.number.2016[rdsurvey2016$role == "total"]
+hed.gov.2016 = res.gov.2016 + res.hed.2016 #HED + Government total users
+
+percent.nesi.users.gov.hed = discipline.nesi.users * 100 / hed.gov.2016
+discipline.nesi.users = sum(resdiscipline$nesi.users) 
+percentage.nesi.users = discipline.nesi.users *100 /discipline.res.number
+resdiscipline$nesi.percentage = resdiscipline$nesi.users * 100 / resdiscipline$res.staff.number
+
+cat("There are", hed.gov.2016, "researchers in higer education and government combined, and ", discipline.nesi.users, "total nesi users. That is, NeSi users are about ", format(percent.nesi.users.gov.hed, digits = 3, nsmall =2),"% of the gov + HED workforce. The workforce for business has been excluded from the calculation.")
+
+
+
+cat("A calculation of the percentage of the workforce by discipline cannot be done with the avilable data - but it can be calculated assuming all nesi users are in HED - this provides an overestimate of the percentage of workforce within the discipline that is using NeSI. ")
+
+ggplot(resdiscipline, aes(x=reorder(discipline,nesi.percentage), y=nesi.percentage)) +
+  geom_bar(stat="identity") + 
+  xlab("") +
+  ylab("users as percentage of workforce")+
+  ggtitle("% of workforce using NeSI, by discipline")+
+  coord_flip()
+
+```
+
+This is, however, an overestimation of the actual proportions since it assumes all NeSI users come from the HED sector. I am unable to find a breakdown of research force within CRIs that I can map onto disciplines. The only way around this would be to assume that the distribution across disciplines in the government and higher education are the same and break up the government data across those proportions - but this would probably be a really incorrect assumption. 
+
+
+
+```{r donut plot, echo=FALSE, eval=FALSE}
 
 # Create data to plot
 dat <- data.frame(institution = resinstitution$institution, staffnumber = resinstitution$res.staff.number, insttype = resinstitution$inst.category)
