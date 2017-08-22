@@ -16,7 +16,9 @@ output:
 #* provide correct filename
 #* check data has been read as a data.frame
 
-setwd("~/Desktop/GitHub/nesi-training/Data-analysis")
+#setwd("~/Desktop/GitHub/nesi-training/Data-analysis")
+setwd("~/Documents/GitHub/nesi-training/Data-analysis")
+
 reshed = read.csv("researchers-hed.csv") #HED institutions
 rescri = read.csv("researchers-cris.csv") #CRI data
 resdiscipline = read.csv("researchers-discipline.csv")
@@ -42,8 +44,6 @@ Estimate number or total researchers in each Higher Ed institution, by using the
 
 
 ```{r researchers, echo=FALSE, eval = TRUE}
-
-setwd("~/Desktop/GitHub/nesi-training/Data-analysis")
 
 #read from rd-2016.csv total eft and number of researchers (exculde student researcher)
 hed.researcher.number <- as.numeric(rdsurvey2016$hed.number.2016[rdsurvey2016$role == "researcher"])
@@ -155,7 +155,7 @@ discipline.nesi.users = sum(resdiscipline$nesi.users)
 percentage.nesi.users = discipline.nesi.users *100 /discipline.res.number
 resdiscipline$nesi.percentage = resdiscipline$nesi.users * 100 / resdiscipline$res.staff.number
 
-cat("There are", hed.gov.2016, "researchers in higer education and government combined, and ", discipline.nesi.users, "total nesi users. That is, NeSi users are about ", format(percent.nesi.users.gov.hed, digits = 3, nsmall =2),"% of the gov + HED workforce. The workforce for business has been excluded from the calculation.")
+cat("There are", hed.gov.2016, "researchers in higer education and government combined, and ", discipline.nesi.users, "total nesi users. That is, NeSi users are about ", format(percent.nesi.users.gov.hed, digits = 3, nsmall =2),"% of the gov + HED workforce. The workforce for business has been excluded from the calculation. This includes support staff - so perhaps I should remove this.") 
 
 
 
