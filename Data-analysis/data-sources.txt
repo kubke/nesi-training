@@ -14,10 +14,8 @@ Personnel involved in research and development (NZ wide):
 Research and Development survey 2016, file rd-2016-tables.xlx, Table 7, stats.nz 
 *Totals presented in the table are different from actual sum of numbers in the table. 
 
-
 funded.eps: 
 Number of funded evidence portfolios in PBRF 2012 round. 
-
 * Institution: PBRF 2012 Supplement Appendix A Part 1 Table A-1
 * Discipline: PBRF 2012 Supplement Appendix A Part 1 Table A-2
 
@@ -26,13 +24,30 @@ for heduni and hedother:
 Calculate percentage of Eps - (toal = 6311.41) -> includes all institutions
 
 estimate HED research number from total population:
-
 Tot number researcher 2016: 10700 (from file rd-2016-tables.xlx, Table 7 stats.nz)’
 
-student numbers and EPS
-Data from:
-Added MS and PhD students only - reorganised fields of study as per 2018 PBRF guidelines.
+CRI numbers
+From annual reports, etc - all data in CRI staff data.xlsx
+Sources therein
+Highlighted in yellow the data that is used for calculations.
+**** TOTAL FTE for CRIs from Review of CRI core funding - MBIE 
+**** USE this total FTE as total number for SCION as cannot find a total number there
+**** USE Staff FTE as staff number when needed
+*** I think it may be better to just relate to CRI wrt total staff from MBIE ????
 
+
+student numbers and EPS
+Data from: https://www.educationcounts.govt.nz/statistics/tertiary-education/participation
+Provider-based-EFTS-field-of-study-course-level.xlsx
+Provider-based-Enrolments-2008-2015-final.xlsx
+Provider-based-enrolments-predominant-field-of-study.xlsx
+Provider-based-Equivalent-Full-Time-EFTS-2008-2015-final.xlsx
+Added MS and PhD students only - reorganised fields of study as per 2018 PBRF guidelines.
+****  Excludes students from Mixed Field Programmes: Total: 15, EFT: 0
+**** There is no student number in Maori Knowledge and Development
+Calculate values in table saved in student-numbers.xlsx
+**** Total number (institution) = 25850; total number (discipline) 27865
+**** Total number of student researchers (as per R&D 2016) = 16400
 
 NeSI users
 Classification of data from annual report using PBRF 2018 panel guidelines
