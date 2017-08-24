@@ -27,3 +27,18 @@ Calculate percentage of Eps - (toal = 6311.41) -> includes all institutions
 
 estimate HED research number from total population:
 Tot number researcher 2016: 10700 (from file rd-2016-tables.xlx, Table 7 stats.nz)
+
+NeSI users
+Classification of data from annual report using PBRF 2018 panel guidelines
+http://www.tec.govt.nz/assets/Forms-templates-and-guides/PBRF-Panel-Specific-Guidelines-2018-Quality-Evaluation.pdf
+
+Data Input, etc:
+
+* Set up tables in Excel as CSV - make sure all tables are as “number”
+* Open Refine -> change cells to number, save projects and files
+
+rd-2016 -> RD survey 2016 data
+researchers-cris -> CRI data
+ressearcher-discipline -> HED data per discipline (per PBRF 2012)
+researcher-institution -> all HED as per PBRF 2012
+
