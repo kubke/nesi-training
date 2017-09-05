@@ -245,6 +245,68 @@ ggplot(resdiscipline, aes(x=reorder(discipline,nesi.percentage), y=nesi.percenta
 
 This is, however, an overestimation of the actual proportions since it assumes all NeSI users come from the HED sector. I am unable to find a breakdown of research force within CRIs that I can map onto disciplines. The only way around this would be to assume that the distribution across disciplines in the government and higher education are the same and break up the government data across those proportions - but this would probably be a really incorrect assumption. 
 
+# NeSI training activities
+
+```{r nesi training sessions, echo = FALSE, eval = TRUE}
+
+#read all nesi training events and separate into outreach and other types of training.
+nesi.training.all = read.csv("nesi-training.csv", dec = ",")
+nesi.training.all$year = as.numeric(levels(nesi.training.all$year))[nesi.training.all$year]
+#nesi.training.all$event.number <- as.factor(nesi.training.all$event.number) # I need this column to be a factor
+
+nesi.outreach = subset(nesi.training.all, nesi.training.all$purpose == "outreach")
+nesi.training = subset(nesi.training.all, nesi.training.all$purpose != "outreach")
+
+all.training.events <- unique(nesi.training.all$event.number)
+outreach.events <- unique(nesi.outreach$event.number)
+training.events <- unique(nesi.training$event.number)
+
+cat("There were ", length(all.training.events), "training events; of these" , length(outreach.events), "were outreach events and ", length(training.events), "were training events.")
+```
+
+
+```{r training events by institution, echo = FALSE, EVAL = TRUE}
+
+# Training events by institution
+
+#This below lets me do bar graphs, but I need to manangle the data on excel, and redo every time I update the main spreadsheet - so not sure this is a good idea. Also I would have to do a new spreadsheet every time I try to susbset something - too much risk for errors.
+
+#training.institution = read.csv("nesi-training-by-institution.csv")
+#training.institution_m<- melt(training.institution, id.vars = "institution")
+#ggplot(training.institution_m, aes(x = variable, y = value, )) + geom_bar(stat = "identity") +
+ # facet_wrap(~institution) +
+ # coord_flip() +
+ # theme(axis.text.y = element_text(size = 3))
+  
+#This counts the number of occurrences of combinations of institution/events as a bubble graph. 
+#cri.training 
+
+
+ggplot(subset(nesi.training.all, institution.type %in% c("cri", "other")), aes(x=institution, y=event.type, color = ..n.., size = ..n..)) +
+  scale_color_gradient(low="blue", high="red")+
+  guides(color = 'legend') +
+  geom_count() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+  coord_flip()
+ #I dont know how to get the legend to show only integers in plot above
+  
+
+ggplot(subset(nesi.training.all, institution.type %in% c("heduni")), aes(x=institution, y=event.type, color = ..n.., size = ..n..)) +
+  geom_count() +
+  scale_color_gradient(low="blue", high="red")+
+  guides(color = 'legend') +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+  coord_flip()
+  #+ 
+  #ggtitle("# NeSI Learners % by institution (HED)")+
+ # ylab("% of workforce")+
+ # xlab("event")
+  
+  #+
+ # coord_flip()
+  
+```
+
 
 
 ```{r donut plot, echo=FALSE, eval=FALSE}
