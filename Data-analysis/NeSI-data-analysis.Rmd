@@ -3,7 +3,8 @@ title: "NeSI-data-analysis"
 author: "Fabiana"
 date: "15 August 2017"
 output:
-  word_document: default
+  word_document: 
+    fig_caption: yes
   html_document: default
 ---
 
@@ -16,8 +17,8 @@ output:
 #* provide correct filename
 #* check data has been read as a data.frame
 
-#setwd("~/Desktop/GitHub/nesi-training/Data-analysis")
-setwd("~/Documents/GitHub/nesi-training/Data-analysis")
+setwd("~/Desktop/GitHub/nesi-training/Data-analysis")
+#0setwd("~/Documents/GitHub/nesi-training/Data-analysis")
 
 reshed = read.csv("researchers-hed.csv") #HED institutions
 rescri = read.csv("researchers-cris.csv") #CRI data
@@ -281,36 +282,295 @@ cat("There were ", length(all.training.events), "training events; of these" , le
 #This counts the number of occurrences of combinations of institution/events as a bubble graph. 
 #cri.training 
 
-
-ggplot(subset(nesi.training.all, institution.type %in% c("cri", "other")), aes(x=institution, y=event.type, color = ..n.., size = ..n..)) +
+# plot training for cris and other (mainly govt?)
+ggplot(subset(nesi.training.all, institution.type %in% c("cri", "self")), aes(x=institution, y=event.type, color = ..n.., size = ..n..)) +
   scale_color_gradient(low="blue", high="red")+
   guides(color = 'legend') +
   geom_count() +
   theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+  labs(title = "Training participation by CRIs and NeSI")+
   coord_flip()
+
+ggplot(subset(nesi.training.all, institution.type %in% c("other", "?")), aes(x=institution, y=event.type, color = ..n.., size = ..n..)) +
+  scale_color_gradient(low="blue", high="red")+
+  guides(color = 'legend') +
+  geom_count() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+  labs(title = "Training participation by other government(?) institutions")+
+  coord_flip()
+
  #I dont know how to get the legend to show only integers in plot above
   
-
+# plot training for higher ed
 ggplot(subset(nesi.training.all, institution.type %in% c("heduni")), aes(x=institution, y=event.type, color = ..n.., size = ..n..)) +
   geom_count() +
   scale_color_gradient(low="blue", high="red")+
   guides(color = 'legend') +
   theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+  labs(title = "Training participation by Higer Education institutions")+
   coord_flip()
-  #+ 
-  #ggtitle("# NeSI Learners % by institution (HED)")+
- # ylab("% of workforce")+
- # xlab("event")
+ 
   
-  #+
- # coord_flip()
+```
+
+#NeSI usage
+
+```{r nesi usage test, echo = FALSE, eval = FALSE}
+nesi.use.test = read.csv("nesi-mfk-testdata.csv")
+nesi.use.test$used = as.numeric(nesi.use.test$used)
+
+#trying to see if I can do a count plot
+
+ggplot(subset(nesi.use.test, (project_reporting_discipline != "0.00")), aes(x=institution, y=project_reporting_discipline, type, color = ..n.., size = ..n..)) +
+  geom_count(alpha=0.5) +
+  scale_color_gradient(low="blue", high="red")+
+  guides(color = 'legend') +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+  labs(title = "This is a NeSI user chart")+
+  coord_flip()
+
+ggplot(subset(nesi.use.test, used %in% c(90:1000)), aes(x=institution, y=project_reporting_discipline, type, color = ..n.., size = ..n..)) +
+  geom_count(alpha=0.5) +
+  scale_color_gradient(low="blue", high="red")+
+  guides(color = 'legend') +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+  labs(title = "This is a NeSI user chart")+
+  coord_flip()
+```
+```{r nesi use create files, echo=FALSE, eval=TRUE}
+
+#read nesi usage data
+nesi.use = read.csv("nesi-mfk-testdata-trimmed.csv")
+
+#create destination file
+bubble.plot <- as.data.frame(unique(as.character(nesi.use$project_reporting_discipline)))
+colnames(bubble.plot)<-"discipline"
+
+
+#for unknown
+
+for (i in 2009:2018){
+   
+   yearcolumn<-paste("nesi.use$X",i , sep="")
+   temp <- subset(nesi.use, (eval(parse(text = yearcolumn))== "y"))
+   
+   #get number of researchers
+   bubble.plot$users[bubble.plot$discipline == "unknown"]<- 
+     length(unique(temp$id[temp$project_reporting_discipline == "unknown"])) 
+   bubble.plot$users[bubble.plot$discipline == "Astronomy"]<-
+     length(unique(temp$id[temp$project_reporting_discipline == "Astronomy"])) 
+   bubble.plot$users[bubble.plot$discipline == "Biology"]<- 
+     length(unique(temp$id[temp$project_reporting_discipline == "Biology"]))
+   bubble.plot$users[bubble.plot$discipline == "Chemistry"]<- 
+     length(unique(temp$id[temp$project_reporting_discipline == "Chemistry"]))
+   bubble.plot$users[bubble.plot$discipline == "Computer Science"]<- 
+     length(unique(temp$id[temp$project_reporting_discipline == "Computer Science"]))
+   bubble.plot$users[bubble.plot$discipline == "Earth Science"]<- 
+     length(unique(temp$id[temp$project_reporting_discipline == "Earth Science"]))
+   bubble.plot$users[bubble.plot$discipline == "Engineering"]<- 
+     length(unique(temp$id[temp$project_reporting_discipline == "Engineering"]))
+   bubble.plot$users[bubble.plot$discipline == "Mathematics"]<- 
+     length(unique(temp$id[temp$project_reporting_discipline == "Mathematics"]))
+   bubble.plot$users[bubble.plot$discipline == "Medical Science"]<- 
+     length(unique(temp$id[temp$project_reporting_discipline == "Medical Science"]))
+   bubble.plot$users[bubble.plot$discipline == "Physics"]<- 
+     length(unique(temp$id[temp$project_reporting_discipline == "Physics"]))
+   bubble.plot$users[bubble.plot$discipline == "Social Science"]<- 
+     length(unique(temp$id[temp$project_reporting_discipline == "Social Science"]))
+   
+   colnames(bubble.plot)[colnames(bubble.plot) == 'users'] <- paste("users.", i, sep="")
   
+   #get number of projects
+   bubble.plot$projects[bubble.plot$discipline == "unknown"]<- 
+     length(unique(temp$project_id[temp$project_reporting_discipline == "unknown"]))
+   bubble.plot$projects[bubble.plot$discipline == "Astronomy"]<- 
+     length(unique(temp$project_id[temp$project_reporting_discipline == "Astronomy"]))
+   bubble.plot$projects[bubble.plot$discipline == "Biology"]<- 
+     length(unique(temp$project_id[temp$project_reporting_discipline == "Biology"])) 
+   bubble.plot$projects[bubble.plot$discipline == "Chemistry"]<- 
+     length(unique(temp$project_id[temp$project_reporting_discipline == "Chemistry"]))
+   bubble.plot$projects[bubble.plot$discipline == "Computer Science"]<- 
+     length(unique(temp$project_id[temp$project_reporting_discipline == "Computer Science"]))
+   bubble.plot$projects[bubble.plot$discipline == "Earth Science"]<- 
+     length(unique(temp$project_id[temp$project_reporting_discipline == "Earth Science"]))
+   bubble.plot$projects[bubble.plot$discipline == "Engineering"]<- 
+     length(unique(temp$project_id[temp$project_reporting_discipline == "Engineering"]))
+   bubble.plot$projects[bubble.plot$discipline == "Mathematics"]<- 
+     length(unique(temp$project_id[temp$project_reporting_discipline == "Engineering"]))
+   bubble.plot$projects[bubble.plot$discipline == "Medical Science"]<- 
+     length(unique(temp$project_id[temp$project_reporting_discipline == "Medical Science"])) 
+   bubble.plot$projects[bubble.plot$discipline == "Physics"]<- 
+     length(unique(temp$project_id[temp$project_reporting_discipline == "Physics"]))
+   bubble.plot$projects[bubble.plot$discipline == "Social Science"]<- 
+     length(unique(temp$project_id[temp$project_reporting_discipline == "Social Science"])) 
+   
+   colnames(bubble.plot)[colnames(bubble.plot) == 'projects'] <- paste("projects.", i, sep="")
+  
+   #get number of used hours
+   bubble.plot$hours[bubble.plot$discipline == "unknown"]<- 
+     sum(temp$used[temp$project_reporting_discipline == "unknown"])
+   bubble.plot$hours[bubble.plot$discipline == "Astronomy"]<- 
+     sum(temp$used[temp$project_reporting_discipline == "Astronomy"])
+   bubble.plot$hours[bubble.plot$discipline == "Biology"]<- 
+     sum(temp$used[temp$project_reporting_discipline == "Biology"])
+   bubble.plot$hours[bubble.plot$discipline == "Chemistry"]<- 
+     sum(temp$used[temp$project_reporting_discipline == "Chemistry"])
+   bubble.plot$hours[bubble.plot$discipline == "Computer Science"]<- 
+     sum(temp$used[temp$project_reporting_discipline == "Computer Science"])
+   bubble.plot$hours[bubble.plot$discipline == "Earth Science"]<- 
+     sum(temp$used[temp$project_reporting_discipline == "Earth Science"])
+   bubble.plot$hours[bubble.plot$discipline == "Engineering"]<- 
+     sum(temp$used[temp$project_reporting_discipline == "Engineering"])
+   bubble.plot$hours[bubble.plot$discipline == "Mathematics"]<- 
+     sum(temp$used[temp$project_reporting_discipline == "Mathematics"])
+   bubble.plot$hours[bubble.plot$discipline == "Medical Science"]<- 
+     sum(temp$used[temp$project_reporting_discipline == "Medical Science"])
+   bubble.plot$hours[bubble.plot$discipline == "Physics"]<- 
+     sum(temp$used[temp$project_reporting_discipline == "Engineering"])
+   bubble.plot$hours[bubble.plot$discipline == "Social Science"]<- 
+     sum(temp$used[temp$project_reporting_discipline == "Social Science"])
+   
+   colnames(bubble.plot)[colnames(bubble.plot) == 'hours'] <- paste("hours.", i, sep="")
+}
+
+ggplot()+
+  geom_point(data=subset(bubble.plot, discipline == "unknown"), aes(x=projects.2017, y=hours.2017, size = users.2017, colour = "2017"))+
+  geom_point(data=subset(bubble.plot, discipline == "unknown"), aes(x=projects.2016, y=hours.2016, size = users.2016, colour="2016"))+
+  geom_point(data=subset(bubble.plot, discipline == "unknown"), aes(x=projects.2015, y=hours.2015, size = users.2015,colour = "2015" ))+
+  geom_point(data=subset(bubble.plot, discipline == "unknown"), aes(x=projects.2014, y=hours.2014, size = users.2014,colour = "2014" ))+
+   geom_point(data=subset(bubble.plot, discipline == "unknown"), aes(x=projects.2013, y=hours.2013, size = users.2013,colour = "2013" ))+
+   geom_point(data=subset(bubble.plot, discipline == "unknown"), aes(x=projects.2012, y=hours.2012, size = users.2012,colour = "2012" ))+
+  ggtitle("unknown")
+
+
+ggplot()+
+  geom_point(data=subset(bubble.plot, discipline == "Astronomy"), aes(x=projects.2017, y=hours.2017, size = users.2017, colour = "2017"))+
+  geom_point(data=subset(bubble.plot, discipline == "Astronomy"), aes(x=projects.2016, y=hours.2016, size = users.2016, colour="2016"))+
+  geom_point(data=subset(bubble.plot, discipline == "Astronomy"), aes(x=projects.2015, y=hours.2015, size = users.2015,colour = "2015" ))+
+  geom_point(data=subset(bubble.plot, discipline == "Astronomy"), aes(x=projects.2014, y=hours.2014, size = users.2014,colour = "2014" ))+
+   geom_point(data=subset(bubble.plot, discipline == "Astronomy"), aes(x=projects.2013, y=hours.2013, size = users.2013,colour = "2013" ))+
+   geom_point(data=subset(bubble.plot, discipline == "Astronomy"), aes(x=projects.2012, y=hours.2012, size = users.2012,colour = "2012" ))+
+  ggtitle("Astronomy")
+
+ggplot()+
+  geom_point(data=subset(bubble.plot, discipline == "Biology"), aes(x=projects.2017, y=hours.2017, size = users.2017, colour = "2017"))+
+  geom_point(data=subset(bubble.plot, discipline == "Biology"), aes(x=projects.2016, y=hours.2016, size = users.2016, colour="2016"))+
+  geom_point(data=subset(bubble.plot, discipline == "Biology"), aes(x=projects.2015, y=hours.2015, size = users.2015,colour = "2015" ))+
+  geom_point(data=subset(bubble.plot, discipline == "Biology"), aes(x=projects.2014, y=hours.2014, size = users.2014,colour = "2014" ))+
+   geom_point(data=subset(bubble.plot, discipline == "Biology"), aes(x=projects.2013, y=hours.2013, size = users.2013,colour = "2013" ))+
+   geom_point(data=subset(bubble.plot, discipline == "Biology"), aes(x=projects.2012, y=hours.2012, size = users.2012,colour = "2012" ))+
+  ggtitle("Biology")
+
+ggplot()+
+  geom_point(data=subset(bubble.plot, discipline == "Chemistry"), aes(x=projects.2017, y=hours.2017, size = users.2017, colour = "2017"))+
+  geom_point(data=subset(bubble.plot, discipline == "Chemistry"), aes(x=projects.2016, y=hours.2016, size = users.2016, colour="2016"))+
+  geom_point(data=subset(bubble.plot, discipline == "Chemistry"), aes(x=projects.2015, y=hours.2015, size = users.2015,colour = "2015" ))+
+  geom_point(data=subset(bubble.plot, discipline == "Chemistry"), aes(x=projects.2014, y=hours.2014, size = users.2014,colour = "2014" ))+
+   geom_point(data=subset(bubble.plot, discipline == "Chemistry"), aes(x=projects.2013, y=hours.2013, size = users.2013,colour = "2013" ))+
+   geom_point(data=subset(bubble.plot, discipline == "Chemistry"), aes(x=projects.2012, y=hours.2012, size = users.2012,colour = "2012" ))+
+  ggtitle("Chemistry")
+
+
+ggplot()+
+  geom_point(data=subset(bubble.plot, discipline == "Computer Science"), aes(x=projects.2017, y=hours.2017, size = users.2017, colour = "2017"))+
+  geom_point(data=subset(bubble.plot, discipline == "Computer Science"), aes(x=projects.2016, y=hours.2016, size = users.2016, colour="2016"))+
+  geom_point(data=subset(bubble.plot, discipline == "Computer Science"), aes(x=projects.2015, y=hours.2015, size = users.2015,colour = "2015" ))+
+  geom_point(data=subset(bubble.plot, discipline == "Computer Science"), aes(x=projects.2014, y=hours.2014, size = users.2014,colour = "2014" ))+
+   geom_point(data=subset(bubble.plot, discipline == "Computer Science"), aes(x=projects.2013, y=hours.2013, size = users.2013,colour = "2013" ))+
+   geom_point(data=subset(bubble.plot, discipline == "Computer Science"), aes(x=projects.2012, y=hours.2012, size = users.2012,colour = "2012" ))+
+  ggtitle("Computer Science")
+
+ggplot()+
+  geom_point(data=subset(bubble.plot, discipline == "Earth Science"), aes(x=projects.2017, y=hours.2017, size = users.2017, colour = "2017"))+
+  geom_point(data=subset(bubble.plot, discipline == "Earth Science"), aes(x=projects.2016, y=hours.2016, size = users.2016, colour="2016"))+
+  geom_point(data=subset(bubble.plot, discipline == "Earth Science"), aes(x=projects.2015, y=hours.2015, size = users.2015,colour = "2015" ))+
+  geom_point(data=subset(bubble.plot, discipline == "Earth Science"), aes(x=projects.2014, y=hours.2014, size = users.2014,colour = "2014" ))+
+   geom_point(data=subset(bubble.plot, discipline == "Earth Science"), aes(x=projects.2013, y=hours.2013, size = users.2013,colour = "2013" ))+
+   geom_point(data=subset(bubble.plot, discipline == "Earth Science"), aes(x=projects.2012, y=hours.2012, size = users.2012,colour = "2012" ))+
+  ggtitle("Earth Science")
+
+ggplot()+
+  geom_point(data=subset(bubble.plot, discipline == "Engineering"), aes(x=projects.2017, y=hours.2017, size = users.2017, colour = "2017"))+
+  geom_point(data=subset(bubble.plot, discipline == "Engineering"), aes(x=projects.2016, y=hours.2016, size = users.2016, colour="2016"))+
+  geom_point(data=subset(bubble.plot, discipline == "Engineering"), aes(x=projects.2015, y=hours.2015, size = users.2015,colour = "2015" ))+
+  geom_point(data=subset(bubble.plot, discipline == "Engineering"), aes(x=projects.2014, y=hours.2014, size = users.2014,colour = "2014" ))+
+   geom_point(data=subset(bubble.plot, discipline == "Engineering"), aes(x=projects.2013, y=hours.2013, size = users.2013,colour = "2013" ))+
+   geom_point(data=subset(bubble.plot, discipline == "Engineering"), aes(x=projects.2012, y=hours.2012, size = users.2012,colour = "2012" ))+
+  ggtitle("Engineering")
+
+ggplot()+
+  geom_point(data=subset(bubble.plot, discipline == "Mathematics"), aes(x=projects.2017, y=hours.2017, size = users.2017, colour = "2017"))+
+  geom_point(data=subset(bubble.plot, discipline == "Mathematics"), aes(x=projects.2016, y=hours.2016, size = users.2016, colour="2016"))+
+  geom_point(data=subset(bubble.plot, discipline == "Mathematics"), aes(x=projects.2015, y=hours.2015, size = users.2015,colour = "2015" ))+
+  geom_point(data=subset(bubble.plot, discipline == "Mathematics"), aes(x=projects.2014, y=hours.2014, size = users.2014,colour = "2014" ))+
+   geom_point(data=subset(bubble.plot, discipline == "Mathematics"), aes(x=projects.2013, y=hours.2013, size = users.2013,colour = "2013" ))+
+   geom_point(data=subset(bubble.plot, discipline == "Mathematics"), aes(x=projects.2012, y=hours.2012, size = users.2012,colour = "2012" ))+
+  ggtitle("Mathematics")
+
+ggplot()+
+  geom_point(data=subset(bubble.plot, discipline == "Medical Science"), aes(x=projects.2017, y=hours.2017, size = users.2017, colour = "2017"))+
+  geom_point(data=subset(bubble.plot, discipline == "Medical Science"), aes(x=projects.2016, y=hours.2016, size = users.2016, colour="2016"))+
+  geom_point(data=subset(bubble.plot, discipline == "Medical Science"), aes(x=projects.2015, y=hours.2015, size = users.2015,colour = "2015" ))+
+  geom_point(data=subset(bubble.plot, discipline == "Medical Science"), aes(x=projects.2014, y=hours.2014, size = users.2014,colour = "2014" ))+
+   geom_point(data=subset(bubble.plot, discipline == "Medical Science"), aes(x=projects.2013, y=hours.2013, size = users.2013,colour = "2013" ))+
+   geom_point(data=subset(bubble.plot, discipline == "Medical Science"), aes(x=projects.2012, y=hours.2012, size = users.2012,colour = "2012" ))+
+  ggtitle("Medical Science")
+
+ggplot()+
+  geom_point(data=subset(bubble.plot, discipline == "Physics"), aes(x=projects.2017, y=hours.2017, size = users.2017, colour = "2017"))+
+  geom_point(data=subset(bubble.plot, discipline == "Physics"), aes(x=projects.2016, y=hours.2016, size = users.2016, colour="2016"))+
+  geom_point(data=subset(bubble.plot, discipline == "Physics"), aes(x=projects.2015, y=hours.2015, size = users.2015,colour = "2015" ))+
+  geom_point(data=subset(bubble.plot, discipline == "Physics"), aes(x=projects.2014, y=hours.2014, size = users.2014,colour = "2014" ))+
+   geom_point(data=subset(bubble.plot, discipline == "Physics"), aes(x=projects.2013, y=hours.2013, size = users.2013,colour = "2013" ))+
+   geom_point(data=subset(bubble.plot, discipline == "Physics"), aes(x=projects.2012, y=hours.2012, size = users.2012,colour = "2012" ))+
+  ggtitle("Physics")
+
+ggplot()+
+  geom_point(data=subset(bubble.plot, discipline == "Social Science"), aes(x=projects.2017, y=hours.2017, size = users.2017, colour = "2017"))+
+  geom_point(data=subset(bubble.plot, discipline == "Social Science"), aes(x=projects.2016, y=hours.2016, size = users.2016, colour="2016"))+
+  geom_point(data=subset(bubble.plot, discipline == "Social Science"), aes(x=projects.2015, y=hours.2015, size = users.2015,colour = "2015" ))+
+  geom_point(data=subset(bubble.plot, discipline == "Social Science"), aes(x=projects.2014, y=hours.2014, size = users.2014,colour = "2014" ))+
+   geom_point(data=subset(bubble.plot, discipline == "Social Science"), aes(x=projects.2013, y=hours.2013, size = users.2013,colour = "2013" ))+
+   geom_point(data=subset(bubble.plot, discipline == "Social Science"), aes(x=projects.2012, y=hours.2012, size = users.2012,colour = "2012" ))+
+  ggtitle("Social Science")
+
 ```
 
 
 
-```{r donut plot, echo=FALSE, eval=FALSE}
 
+
+```{r sandbox, echo=FALSE, eval=FALSE}
+
+# entering filenames into for loops
+
+year = 2015
+discipline = dQuote("unknown")
+
+for (i in 2009:20018){
+    bubble.plot[paste("user.", i, sep="")] <- NA
+}
+
+column <- paste("bubble.plot$users.", year,"[bubble.plot$discipline ==",discipline,"]",sep="")
+eval(parse(text=column)) = 3000
+bubble.plot$users.2014[bubble.plot$discipline == “unknown”] = 300 
+
+  bubble.plot <- as.data.frame(unique(as.character(nesi.use$project_reporting_discipline)))
+colnames(bubble.plot)<-"discipline"
+
+year=2014
+    column <- paste("bubble.plot$users.", as.character(year),"[bubble.plot$discipline ==",discipline,"]", sep="")
+  eval(parse(text=column)) <-2056
+
+for (year in c(2009:2018)){
+  year=2014
+  i=2
+  column <- paste("bubble.plot$users", year,"[bubble.plot$discipline ==",dQuote("unknown"),"]", sep="")
+  eval(parse(text=column)) <-2056
+}
+    length(unique(nesi.use.year$id[nesi.use.year$project_reporting_discipline == "unknown"]))
+
+#Donut plot
 # Create data to plot
 dat <- data.frame(institution = resinstitution$institution, staffnumber = resinstitution$res.staff.number, insttype = resinstitution$inst.category)
 
