@@ -63,3 +63,15 @@ researchers-cris -> CRI data
 ressearcher-discipline -> HED data per discipline (per PBRF 2012)
 researcher-institution -> all HED as per PBRF 2012
 
+NeSi usage data
+Table from Kidd @ NeSI - 
+Create nesi-mfk-test-data with tab with all information
+Create columns for years based on start/end date - where no end date use only start date
+use id to identify unique users
+use project id to identify unique projects
+Remove all project whose codes start with ceres or rvmf which are CeR projects
+Retain NeSI classification of discipline (project_reporting_discipline column)
+retain project test99999
+add institution type column
+Remove identifying information where affiliation is in NZ, use NZ affiliation institution. Otherwise, put as other
+
