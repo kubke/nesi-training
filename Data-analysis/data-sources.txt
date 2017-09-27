@@ -1,6 +1,53 @@
 
 ABBREVIATIONS
 
+
+
+# Estimating the number of researchers per institution, per discipline
+
+Uses data for 2016 R&D survey (from stats.nz), data from 2012 PBRF, and CRI reporting documents to estimate the size of the workforce. Higher education institutions are tagged as heduni (for universities, under PBRF definition) or hedother, for non-university tertiary institutions that contribute to PBRF. 
+
+## R&D survey 2016
+
+Provides size of research workforce in Government, private business and higher education for years 2014 and 2016 as number of researchers and ftes (resarcher, student researcher, technician and support staff). Sources: 
+Research and Development survey 2016, file rd-2016-tables.xlx, Table 7, downloaded from (http://www.stats.govt.nz/browse_for_stats/businesses/research_and_development/info-releases.aspx)
+*Totals presented in the table are different from actual sum of numbers in the table. 
+
+## PBRF data
+
+Uses PBRF reporting data for higher education that provides the total number of funded Evidence Portfolios per institution (Table A-1) and per discipline (Table A-2). 
+Source: PBRF-2012-Supplement-Appendix-A-Part-1, (http://www.tec.govt.nz/funding/funding-and-performance/funding/fund-finder/performance-based-research-fund/previous-quality-evaluation-rounds/)
+
+
+## CRI data
+
+Uses CRI data obtained from annual reports to estimate the research workforce in each CRI. The data is very inhomogneous - (data collected in CRI Staff data.xlsx, and numbers 'chosen' from there)
+
+## NeSI Learners
+
+by year and by institution
+2017, 2016, 2015, 2013 from _"learners_by_organisation.csv"_ provided by Aleksandra.
+
+## Files/Sources:
+
+_rd-2016.csv_ : 
+Data reorganized from: rd-2016-tables.xlsx, tab 7 
+
+_"researchers-hed.csv"_: 
+all higher education institutions and their respective number of funded eps (by institution). Source: PBRF-2012
+number of NeSI 'learners' by institution for the years  2013, 2015-2017.
+
+_"researchers-discipline.csv"_: 
+all funded eps by the different top level PBRF research disciplines. Source: PBRF-2012
+Number of NeSI users by discipline: data from NeSI Annual Report 2016, p.16. Data were combined to meet PBRF discipline definitions. 
+
+_"researchers-cris.csv"_ 
+ Researcher workforce in CRIs from individual CRI annual reports or other documents. Total number of staff for CRIs is populated from the CRI Core Funding Review May 2016 (MBIE)
+ Includes nesi learners provided by Aleksandra.
+ Includes line 'other' to reflect that there are NeSI learners that cannot be categorized under tertiary nor CRI
+ 
+
+
 inst.category
 * heduni:universities
 * hedother:other higher education
@@ -8,11 +55,7 @@ inst.category
 * otherinst:other institutions (inc. govt and business)
 
 
-Sources:
 
-Personnel involved in research and development (NZ wide):
-Research and Development survey 2016, file rd-2016-tables.xlx, Table 7, stats.nz 
-*Totals presented in the table are different from actual sum of numbers in the table. 
 
 funded.eps: 
 Number of funded evidence portfolios in PBRF 2012 round. 

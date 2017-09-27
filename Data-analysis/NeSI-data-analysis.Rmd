@@ -16,7 +16,7 @@ output:
 #* provide correct filename
 #* check data has been read as a data.frame
 
-setwd("~/Desktop/GitHub/nesi-training/Data-analysis")
+setwd("~/Google Drive/NESI-training-strategy-2017/nesi-training/Data-analysis")
 #setwd("~/Documents/GitHub/nesi-training/Data-analysis")
 
 library(ggplot2) #calls ggplot2 which should be installed
@@ -26,28 +26,12 @@ knitr::opts_chunk$set(fig.width=12, fig.height=8) # control figure size in outpu
 
 ```
 
-# Estimating the number of researchers per institution, per discipline
 
-Uses data for 2016 R&D survey (from stats.nz), data from 2012 PBRF, and CRI reporting documents to estimate the size of the workforce. Higher education institutions are tagged as heduni (for universities, under PBRF definition) or hedother, for non-university tertiary institutions that contribute to PBRF. 
-
-## R&D survey 2016
-Provides size of research workforce in Government, private business and higher education for years 2014 and 2016 as number of researchers and ftes (resarcher, student researcher, technician and support staff). The data is manually reorganised into rd-2016.csv.
-
-## PBRF data
-
-Uses PBRF reporting data for a list of higher education institutions and total number of funded Evidence Portfolios. The data is manually reorganized into 2 different files: 
-(1) researchers-hed.csv which contains all higher education institutions and their respective number of funded eps (by institution)
-(2) researchers-discipline.csv which contains all funded eps by the different top level PBRF research disciplines.
-
-## CRI data
-
-Uses CRI data obtained from annual reports to estimate the research workforce in each CRI. The data is very inhomogneous - (data collected in CRI Staff data.xlsx, and numbers 'chosen' from there)
-
-### Sources:
-rd-2016-tables.xlsx, tab 7 downloaded from (http://www.stats.govt.nz/browse_for_stats/businesses/research_and_development/info-releases.aspx)
-PBRF-2012-Supplement-Appendix-A-Part-1, tabs: Table A-1 and Table A-2 (http://www.tec.govt.nz/funding/funding-and-performance/funding/fund-finder/performance-based-research-fund/previous-quality-evaluation-rounds/)
 
 ```{r workforce, echo=FALSE, eval=TRUE}
+
+# Read the different files, check they have gone in as data.frame
+
 reshed = read.csv("researchers-hed.csv") #HED institutions
 rescri = read.csv("researchers-cris.csv") #CRI data
 resdiscipline = read.csv("researchers-discipline.csv")
@@ -73,33 +57,39 @@ if (is.data.frame(rdsurvey2016) != TRUE) {
 
 ## Worforce number in NZ 
 
-As there are no direct numbers of researchers in each higher education institution or discipline, these numbers are estimated using the number of funded EPs in the 2012 PBRF round. The fraction of funded EPs per institution or per discipline is used to calculate the number of researchers from the total number of researchers in higher education provided in the government R&D 2016 survey. The R&D number used here is that under the role 'researcher', i.e., excludes technical staff, students, and support staff.
+As there are no direct numbers of researchers in each higher education institution or discipline, these numbers are estimated using the number of funded EPs in the 2012 PBRF round. According to TEC there are 9 universities and a number of other HED institutions that contribute to the PBRF 2012. All these other HED institutions are grouped into one as "all other". 
 
-ASSUMPTION: that the fraction of funded EPs across institutions and across disciplines is based on similar fractions of total PBRF eligible workforce. 
+The fraction of funded EPs per institution or per discipline is used to calculate the number of researchers from the total number of researchers in higher education provided in the government R&D 2016 survey. The R&D number used here is that under the role 'researcher', i.e., excludes technical staff, students, and support staff. This provides an approximation of the total number of academic research staff + research fellows/postdocs.
 
-The number of total tech/FTE in Higher Ed is estimated using the same same approach as above.
+*ASSUMPTION: that the fraction of funded EPs across institutions and across disciplines is based on similar fractions of total PBRF eligible workforce.*
 
-ASSUMPTION: That the number of technical staff in each institution/discipline is proportional to the number of 'researcher' staff within institution. (this is probably unlikely?)
+The number of total technician number/FTE in Higher Ed is estimated using the same same approach as above. The number of technicians in the R&D 2016 survey are distributed accross institution/discipline proportionally to the number of funded EPs. 
+
+*ASSUMPTION: That the number of technical staff in each institution/discipline is proportional to the number of 'researcher' staff within institution. (this is probably unlikely?)*
+
+The total number of students in higher education uses the total number of enrolled students in Masters and Phd degrees in 'educationcounts.govt.nz'. The total number is larger than the total number of student researchers in the 2016 R&D survey. 
+
+*ASSUMPTION: that all Masters and PhD students are engaged in research.*
 
 The total number of technicians in CRIs is calculated from the total number of CRI staff (from government CRI review document) and the total number of technical staff (from the 2016 R&D survey).
 
-ASSUMPTION: that the proportion of staff in different roles is similar in all CRIs. 
+*ASSUMPTION: that the proportion of staff in different roles is similar in all CRIs.*
 
-According to TEC there are 9 universities and a number of other HED institutions that contribute to the PBRF 2012. All these other HED institutions are grouped into one as "all other". 
+
 
 
 ```{r researchers, echo=FALSE, eval = TRUE}
 
 #read from rd-2016.csv total eft and number of researchers (exculde student researcher)
-#read from rd-2016.csv total eft and number of researchers
 
-#HED numbers
+
+#HED numbers and FTES from 2016 R&D survey
 hed.researcher.number <- as.numeric(rdsurvey2016$hed.number.2016[rdsurvey2016$role == "researcher"])
 hed.researcher.fte <-as.numeric(rdsurvey2016$hed.fte.2016[rdsurvey2016$role == "researcher"])
 hed.tech.number<-as.numeric(rdsurvey2016$hed.number.2016[rdsurvey2016$role == "technician"])
 hed.tech.fte<-as.numeric(rdsurvey2016$hed.fte.2016[rdsurvey2016$role == "technician"])
 
-#gov numbers
+#gov numbers and FTEs from 2016 R&D survey
 gov.tech.number<-as.numeric(rdsurvey2016$gov.number.2016[rdsurvey2016$role == "technician"])
 gov.tech.fte<-as.numeric(rdsurvey2016$gov.fte.2016[rdsurvey2016$role == "technician"])
 gov.res.number <- as.numeric(rdsurvey2016$gov.number.2016[rdsurvey2016$role == "researcher"])
@@ -133,27 +123,28 @@ reshedall[is.na(reshedall)] <- 0
 rescri[is.na(rescri)]<-0
 resdiscipline[is.na(resdiscipline)] <- 0
 
-#calculate total researchers per institution from funded eviedence porfolio numbers
-
 total.eps <-sum(reshedall$funded.ep) #total number of funded eps should be 6311.41
 if (total.eps != 6311.41) {
   cat("ERROR: you don't have the right number of EPs in ")
 }
 
+#calculate total researchers per institution from funded eviedence porfolio numbers
+
 reshedall$percent.funded.ep <- reshedall$funded.ep * 100 /total.eps
+
 reshedall$res.staff.number <- reshedall$percent.funded.ep * hed.researcher.number  /100
 reshedall$res.staff.fte <- reshedall$percent.funded.ep * hed.researcher.fte /100
+
 reshedall$tech.number <- reshedall$percent.funded.ep * hed.tech.number /100
 reshedall$tech.fte <- reshedall$percent.funded.ep * hed.tech.fte /100
 
 #caclulate total researchers per discipline from funded eviedence porfolio numbers
 
-cat("There is no tech number per discipline. The number of techs per discipline in HED is calculated from percentage funded EPs and the R&D 2016 survey total number of technicians in the resarch workforce")
-
-
 resdiscipline$percent.funded.ep <- resdiscipline$funded.ep * 100 /total.eps
+
 resdiscipline$res.staff.number <- resdiscipline$percent.funded.ep * hed.researcher.number  /100
 resdiscipline$res.staff.fte <- resdiscipline$percent.funded.ep * hed.researcher.fte /100
+
 resdiscipline$tech.number <- as.numeric(resdiscipline$percent.funded.ep * hed.tech.number /100)
 resdiscipline$tech.fte <- resdiscipline$percent.funded.ep * hed.tech.fte /100
 
@@ -245,12 +236,18 @@ Since I am using all enrolled students as part of the calculation of total resea
 ASSUMPTION: that learners are all different people, i.e., does not consider the possibility that the same person may have attended more than one event. 
 
 ```{r learner proportion, echo=FALSE, eval=TRUE}
+
+total.nesi.learners = sum(reshedall$nesi.learner.total)+sum(rescri$nesi.learner.total)
+total.research.workforce = gov.res.number+hed.researcher.number+ hed.student.number+gov.tech.number+ hed.tech.number
+
+cat("Threre are", total.research.workforce, "of researchers (R&D survey, including tech and students), and", total.nesi.learners, "nesi learners over the 4 years reported, which represent", (total.nesi.learners*100/total.research.workforce),"% of the workforce. This does not account for students having been 'learners' more than once.")
+
 cat("Proportion of NeSi learners by HED institutions (all years) ")
 
 ggplot(reshedall, aes(x=reorder(institution,nesi.learner.proportion), y=nesi.learner.proportion)) +
   geom_bar(stat="identity") + 
   #ggtitle("# NeSI Learners % by institution (HED)")+
-  ylab("% of workforce")+
+  ylab("% of HED workforce")+
   xlab("")+
   coord_flip()
 
@@ -259,12 +256,12 @@ cat("Distribution of % NeSI learners by CRIs (all years)")
 rescrionly = subset(rescri, rescri$inst.category == "cri")
 ggplot(rescrionly, aes(x=reorder(institution,nesi.learner.proportion), y=nesi.learner.proportion)) +
   geom_bar(stat="identity") + 
-  ylab("Total number of learners")+
+  ylab("% of CRI workforce")+
   xlab("")+
   coord_flip()
 
 ```
-
+There appears to be more penetration of training towards the CRI workforce than the HED workforce. 
 
 ##Proportion of the workforce in different disciplines that use NeSI
 
