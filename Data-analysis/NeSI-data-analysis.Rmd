@@ -1,18 +1,24 @@
 ---
 title: "NeSI-data-analysis"
 author: "Fabiana"
-date: "15 August 2017"
+date: "5 October 2017"
 output:
   word_document: 
     fig_caption: yes
+    fig_width: 9
   html_document: default
 ---
 
 The purpose of this document is to provide:
+
 * a snapshot of NeSI training activities over the years XXXX-XXXX,
-* the degree to which an estimate of the reach of these training activities can be made
-* an estimate of the penetration of training activities in the research sector
-* an estimate of the potential of NeSI training activities to provide direct or indirect support for researcher upskilling
+
+* the degree to which an estimate of the reach of these training activities can be made,
+
+* an estimate of the penetration of training activities in the research sector,
+
+* an estimate of the potential of NeSI training activities to provide direct or indirect support for researcher upskilling,
+
 * a framework to guide how future NeSI training activities could/should be deployed - taking into account NeSI's capacity - to maximise impact
 
 This document focuses primarily on the higher education sector and CRIs.
@@ -34,7 +40,7 @@ library(reshape2) #need it for plotting
 library(gridExtra)
 library(grid)
 library(knitr)
-knitr::opts_chunk$set(fig.width=12, fig.height=8) # control figure size in output
+#knitr::opts_chunk$set(fig.width=20, fig.height=11) # control figure size in output
 
 ```
 
@@ -244,18 +250,27 @@ percent.hed.learners = format(total.hed.learners*100/hed.workforce, digits=2, ns
 percent.cri.learners = format(total.cri.learners*100/cri.workforce, digits=2, nsmall=2)
 
 
-learnersummary <- matrix(c(total.hed.learners, total.cri.learners, percent.hed.learners, percent.cri.learners), ncol = 2)
-colnames(learnersummary)<- c("total learners", "% learners")
-rownames(learnersummary)<-c("all HED", "all CRI")
-learnersummary <- as.table(learnersummary)
-kable(learnersummary, align=c(rep('c', 5)))
-cat("other learners: ", total.other.learners)
+
 
 ```
 
 ## Distribution of NeSi learners across institutions (total and per year)
 
 ASSUMPTION: that learners are all different people, i.e., does not consider the possibility that the same person may have attended more than one event. 
+
+Most NeSI learners work at HED institutions, whereas CRI learners represent a larger proportion of their workforce. There are other learners from other institutions (eg, DOC, LINZ, etc).
+
+```{r learner summary, echo=FALSE, eval=TRUE}
+
+learnersummary <- matrix(c(total.hed.learners, total.cri.learners, percent.hed.learners, percent.cri.learners), ncol = 2)
+colnames(learnersummary)<- c("total learners", "% learners")
+rownames(learnersummary)<-c("all HED", "all CRI")
+learnersummary <- as.table(learnersummary)
+kable(learnersummary, align=c(rep('c', 5)))
+cat("other learners: ", total.other.learners)
+```
+
+Most NeSI learners in HED work in collaborating institutions, but this trend is not seen in CRIs. There was a large increase in HED learners in 2016/2017, whereas in CRIs most learners participated in 2016. 
 
 ```{r plot learners, echo=FALSE, eval = TRUE}
 
@@ -265,7 +280,8 @@ ASSUMPTION: that learners are all different people, i.e., does not consider the 
 
 ggplot(reshedall, aes(x=reorder(institution, nesi.learner.total), y=nesi.learner.total, fill=relationship)) +
   geom_bar(stat="identity") + 
-  #theme(axis.text.x=element_text(color = "black", size=11, angle=30, vjust=.8, hjust=0.8))+
+  theme(text = element_text(colour = "black", size=18))+
+  #theme(axis.text.x=element_text(size=12), axis.text.y = element_text(size =12))+
   #theme(legend.position="bottom",legend.direction="vertical")+
   ggtitle("# NeSI Learners \nby institution (HED)")+
   ylab("Total number of learners")+
@@ -279,6 +295,7 @@ hedperyear <- melt(reshedall[,c('institution','nesi.learner.2013','nesi.learner.
 ggplot(data=hedperyear, aes(x=reorder(institution, value), y=value, fill=variable)) +
   geom_bar(stat="identity")+
   geom_col(position = position_stack(reverse = TRUE))+
+  theme(text = element_text(colour = "black", size=18))+
   #theme(axis.title.y=element_blank(),axis.text.y=element_blank(),axis.ticks.y=element_blank(),        legend.position="bottom",legend.direction="vertical")+
   ggtitle("# NeSI learners \n by year (HED)")+
   ylab("Number of learners")+
@@ -291,7 +308,8 @@ ggplot(data=hedperyear, aes(x=reorder(institution, value), y=value, fill=variabl
 
 ggplot(rescri, aes(x=reorder(institution,nesi.learner.total), y=nesi.learner.total, fill=relationship)) +
   geom_bar(stat="identity") + 
-  ggtitle("# NeSI Learners by institution (CRI and other)")+
+  theme(text = element_text(colour = "black", size=18))+
+  ggtitle("# NeSI Learners by institution \n(CRI and other)")+
   ylab("Total number of learners")+
   xlab("")+
   coord_flip(ylim = c(0, 250))
@@ -302,7 +320,8 @@ criperyear <- melt(rescri[,c('institution','nesi.learner.2013','nesi.learner.201
 ggplot(criperyear,aes(x = reorder(institution, value),y = value, fill=variable)) + 
   geom_bar(aes(fill = variable),stat = "identity",position = "dodge")  +
   geom_col(position = position_stack(reverse = TRUE))+
-  ggtitle("# NeSI Learners by year (CRI and other)")+
+  theme(text = element_text(colour = "black", size=18))+
+  ggtitle("# NeSI Learners by year \n(CRI and other)")+
   ylab("number of learners") +
   xlab("")+
   coord_flip(ylim = c(0, 250))
@@ -311,12 +330,15 @@ ggplot(criperyear,aes(x = reorder(institution, value),y = value, fill=variable))
 
 ## NeSI learners as a proportion of workforce
 
+NeSI learners in HED, represent a much smaller proportion of the HED workforce when compared to CRIs.
+
 ASSUMPTION: that learners are all different people, i.e., does not consider the possibility that the same person may have attended more than one event. 
 
 ```{r plot learner proportion, echo=FALSE, eval=TRUE}
 
 ggplot(reshedall, aes(x=reorder(institution,nesi.learner.proportion), y=nesi.learner.proportion, fill=relationship)) +
   geom_bar(stat="identity") + 
+  theme(text = element_text(colour = "black", size=18))+
   ggtitle("# NeSI Learners % \nby institution (HED)")+
   ylab("% of HED workforce")+
   xlab("")+
@@ -325,6 +347,7 @@ ggplot(reshedall, aes(x=reorder(institution,nesi.learner.proportion), y=nesi.lea
  
 ggplot(rescrionly, aes(x=reorder(institution,nesi.learner.proportion), y=nesi.learner.proportion, fill=relationship)) +
   geom_bar(stat="identity") + 
+  theme(text = element_text(colour = "black", size=18))+
   ggtitle("# NeSI Learners % \nby institution (CRI)")+
   ylab("% of CRI workforce")+
   xlab("")+
@@ -338,6 +361,8 @@ There appears to be more penetration of training towards the CRI workforce than 
 # NeSI training activities
 
 The plots below show how many events each institution participated in. 
+A large majority of HED institutions and CRIs participated in instructor training.
+The delivery of NeSI-specific training seems to be limited and localized. 
 
 ```{r training sessions, echo = FALSE, eval = TRUE}
 
@@ -359,7 +384,9 @@ ggplot(subset(nesi.training.all, institution.type %in% c("cri", "self")), aes(x=
   scale_color_gradient(low="blue", high="red")+
   guides(color = 'legend') +
   geom_count() +
+  theme(text = element_text(colour = "black", size=12))+
   theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+  xlab("")+ylab("")+
   labs(title = "Training participation by CRIs and NeSI")+
   coord_flip()
 
@@ -367,8 +394,10 @@ ggplot(subset(nesi.training.all, institution.type %in% c("other", "?")), aes(x=i
   scale_color_gradient(low="blue", high="red")+
   guides(color = 'legend') +
   geom_count() +
+  theme(text = element_text(colour = "black", size=12))+
   theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
-  labs(title = "Training participation by other government(?) institutions")+
+  xlab("")+ylab("")+
+  labs(title = "Training participation by \nother government(?) institutions")+
   coord_flip()
 
  #I dont know how to get the legend to show only integers in plot above
@@ -376,10 +405,12 @@ ggplot(subset(nesi.training.all, institution.type %in% c("other", "?")), aes(x=i
 # plot training for higher ed
 ggplot(subset(nesi.training.all, institution.type %in% c("heduni")), aes(x=institution, y=event.type, color = ..n.., size = ..n..)) +
   geom_count() +
+  theme(text = element_text(colour = "black", size=12))+
   scale_color_gradient(low="blue", high="red")+
   guides(color = 'legend') +
   theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
-  labs(title = "Training participation by Higer Education institutions")+
+  xlab("")+ylab("")+
+  labs(title = "Training participation by \nHiger Education institutions")+
   coord_flip()
 ```
 ##Proportion of the workforce in different disciplines that use NeSI
@@ -415,6 +446,7 @@ cat("A calculation of the percentage of the workforce by discipline cannot be do
 
 ggplot(resdiscipline, aes(x=reorder(discipline, nesi.percentage), y=nesi.percentage)) +
   geom_bar(stat="identity") + 
+  theme(text = element_text(colour = "black", size=12))+
   xlab("") +
   ylab("users as percentage of workforce")+
   ggtitle("% of workforce using NeSI, by discipline")+
@@ -422,7 +454,14 @@ ggplot(resdiscipline, aes(x=reorder(discipline, nesi.percentage), y=nesi.percent
 
 ```
 
-This is, however, an overestimation of the actual proportions since it assumes all NeSI users come from the HED sector. I am unable to find a breakdown of research force within CRIs that I can map onto disciplines. The only way around this would be to assume that the distribution across disciplines in the government and higher education are the same and break up the government data across those proportions - but this would probably be a really incorrect assumption. I should be able to sort this once I have the raw nesi usage data. 
+
+
+
+
+(This is, however, an overestimation of the actual proportions since it assumes all NeSI users come from the HED sector. I am unable to find a breakdown of research force within CRIs that I can map onto disciplines. The only way around this would be to assume that the distribution across disciplines in the government and higher education are the same and break up the government data across those proportions - but this would probably be a really incorrect assumption. I should be able to sort this once I have the raw nesi usage data. )
+
+It is interesting that the percentage of the workforse that uses NeSI is somewhat below the percentage of the workforce that receives training. However, most of the training participation is not NeSI specific.
+
 
 #NeSI usage
 
@@ -445,6 +484,7 @@ nesi.use$total.users<-nesi.use$researchers.2012+nesi.use$researchers.2013+nesi.u
          geom_point(data=subset(nesi.use, discipline == user.discipline), aes(x=projects.2014, y=hours.2014, size = researchers.2014,colour = "2014" ))+
          geom_point(data=subset(nesi.use, discipline == user.discipline), aes(x=projects.2013, y=hours.2013, size = researchers.2013,colour = "2013" ))+
          geom_point(data=subset(nesi.use, discipline == user.discipline), aes(x=projects.2012, y=hours.2012, size = researchers.2012,colour = "2012" ))+
+         theme(text = element_text(colour = "black", size=16))+
          ggtitle(user.discipline)+ labs(x="Number of projects", y="Number of hours")
        print(plot)
   
@@ -452,6 +492,65 @@ nesi.use$total.users<-nesi.use$researchers.2012+nesi.use$researchers.2013+nesi.u
 
 
 ```
+
+
+
+```{r testbubble, echo=FALSE, eval = FALSE}
+
+nesi.use <- read.csv("nesiusage.csv")
+nesi.use$total.hours<-nesi.use$hours.2012+nesi.use$hours.2013+nesi.use$hours.2014+nesi.use$hours.2015+nesi.use$hours.2016
+nesi.use$total.projects<-nesi.use$projects.2012+nesi.use$projects.2013+nesi.use$projects.2014+nesi.use$projects.2015+nesi.use$projects.2016
+nesi.use$total.users<-nesi.use$researchers.2012+nesi.use$researchers.2013+nesi.use$researchers.2014+nesi.use$researchers.2015+nesi.use$researchers.2016
+
+ggplot(nesi.use, aes(projects.2012, hours.2012, colour=discipline, size=researchers.2012))+ 
+  geom_point()+
+  xlab("projects")+
+  ylab("hours")+
+  ggtitle("2012")+
+  scale_y_continuous(limits=c(0, 65800000))+
+  scale_x_continuous(limits=c(0,300))
+  ggsave("2012.png", width = 5, height = 5)
+ggplot(nesi.use, aes(projects.2013, hours.2013, colour=discipline, size=researchers.2013))+ geom_point()+xlab("projects")+ylab("hours")+ggtitle("2013")+
+    scale_y_continuous(limits=c(0, 65800000))+
+  scale_x_continuous(limits=c(0,300))
+ ggsave("2013.png", width = 5, height = 5)
+ggplot(nesi.use, aes(projects.2014, hours.2014, colour=discipline, size=researchers.2014))+ geom_point()+xlab("projects")+ylab("hours")+ggtitle("2014")+
+    scale_y_continuous(limits=c(0, 65800000))+
+  scale_x_continuous(limits=c(0,300))
+ ggsave("2014.png", width = 5, height = 5)
+ggplot(nesi.use, aes(projects.2015, hours.2015, colour=discipline, size=researchers.2015))+ geom_point()+xlab("projects")+ylab("hours")+ggtitle("2015")+
+    scale_y_continuous(limits=c(0, 65800000))+
+  scale_x_continuous(limits=c(0,300))
+ ggsave("2015.png", width = 5, height = 5)
+ggplot(nesi.use, aes(projects.2016, hours.2016, colour=discipline, size=researchers.2016))+ geom_point()+xlab("projects")+ylab("hours")+ggtitle("2016")+
+    scale_y_continuous(limits=c(0, 65800000))+
+  scale_x_continuous(limits=c(0,300))
+ ggsave("2016.png", width = 5, height = 5)
+
+
+ggplot()+
+  geom_point(data=nesi.use, aes(total.projects, total.hours, size = total.users, colour = discipline))
+
+ # geom_point(aes(size=total.users))+
+ # geom_text(aes(label=total.users, color="blue", hjust=0, vjust=-1.5))
+
+     for(i in 1:length(nesi.use$discipline)){
+       user.discipline = (as.character(nesi.use[i, "discipline"]))
+       plot<-ggplot()+
+         geom_point(data=subset(nesi.use, discipline == user.discipline), aes(x=projects.2016, y=hours.2016, size = researchers.2016, colour="2016"))+
+         geom_point(data=subset(nesi.use, discipline == user.discipline), aes(x=projects.2015, y=hours.2015, size = researchers.2015,colour = "2015" ))+
+         geom_point(data=subset(nesi.use, discipline == user.discipline), aes(x=projects.2014, y=hours.2014, size = researchers.2014,colour = "2014" ))+
+         geom_point(data=subset(nesi.use, discipline == user.discipline), aes(x=projects.2013, y=hours.2013, size = researchers.2013,colour = "2013" ))+
+         geom_point(data=subset(nesi.use, discipline == user.discipline), aes(x=projects.2012, y=hours.2012, size = researchers.2012,colour = "2012" ))+
+         theme(text = element_text(colour = "black", size=16))+
+         ggtitle(user.discipline)+ labs(x="Number of projects", y="Number of hours")
+       print(plot)
+  
+     }
+
+
+```
+
 
 ```{r nesi training efficiency, echo = FALSE, eval = TRUE}
 instructor.training<-read.csv("Instructor-training.csv")
@@ -464,38 +563,35 @@ training.2015<-subset(instructor.training, year==2015)
 training.2016<-subset(instructor.training, year==2016)
 training.2017<-subset(instructor.training, year==2017)
 
-ggplot(instructor.training, aes(x=reorder(organisation, attendees), y=attendees))+
-  geom_bar(stat="identity")+
-  xlab("")+
-  ylab("Number who completed training (all years)")+
-  ggtitle("Training attendees")+
-  coord_flip()
+#ggplot(instructor.training, aes(x=reorder(organisation, attendees), y=attendees))+
+#  geom_bar(stat="identity")+
+#  theme(text = element_text(colour = "black", size=16))+
+#  xlab("")+
+#  ylab("Number who attended training (all years)")+
+#  ggtitle("Training attendees")+
+#  coord_flip()
 
 # Stacked barplot with multiple groups
 ggplot(data=instructor.training, aes(reorder(x=organisation, attendees), y=attendees, fill=year)) +
   geom_bar(stat="identity")+
+  theme(text = element_text(colour = "black", size=16))+
   xlab("")+
   ylab("Training attendees")+
   ggtitle("Training participation numbers (total)")+
   coord_flip()
 
 
-ggplot(instructor.training,aes(x=organisation,y=attendees,fill=factor(year), colour=instructor.training$year))+
-  geom_bar(aes(fill=instructor.training$year),stat="identity",position="dodge")+
-  xlab("Organization")+ylab("attendees")+
-  ggtitle("Training participation numbers (per year)")+
-  coord_flip()
-
-
-ggplot(instructor.training, aes(x=reorder(organisation,checkout), y=checkout)) +
+ggplot(data=instructor.training, aes(x=reorder(organisation, checkout), y=checkout, fill=year)) +
   geom_bar(stat="identity") + 
+  theme(text = element_text(colour = "black", size=16))+
   xlab("") +
   ylab("# who completed training")+
   ggtitle("Training completion numbers")+
   coord_flip()
 
-ggplot(instructor.training, aes(x=reorder(organisation,completion.rate), y=completion.rate)) +
+ggplot(instructor.training, aes(x=reorder(organisation,checkout), y=completion.rate, fill=year)) +
   geom_bar(stat="identity") + 
+  theme(text = element_text(colour = "black", size=16))+
   xlab("") +
   ylab("% who completed training")+
   ggtitle("Training completion rates")+
